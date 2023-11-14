@@ -1,0 +1,15 @@
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\bin\Debug\net6.0-windows\Image_redactor.exe
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\bin\Debug\net6.0-windows\Image_redactor.deps.json
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\bin\Debug\net6.0-windows\Image_redactor.runtimeconfig.json
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\bin\Debug\net6.0-windows\Image_redactor.dll
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\bin\Debug\net6.0-windows\Image_redactor.pdb
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\obj\Debug\net6.0-windows\Image_redactor.csproj.AssemblyReference.cache
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\obj\Debug\net6.0-windows\Image_redactor.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\obj\Debug\net6.0-windows\Image_redactor.AssemblyInfoInputs.cache
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\obj\Debug\net6.0-windows\Image_redactor.AssemblyInfo.cs
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\obj\Debug\net6.0-windows\Image_redactor.csproj.CoreCompileInputs.cache
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\obj\Debug\net6.0-windows\Image_redactor.dll
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\obj\Debug\net6.0-windows\refint\Image_redactor.dll
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\obj\Debug\net6.0-windows\Image_redactor.pdb
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\obj\Debug\net6.0-windows\Image_redactor.genruntimeconfig.cache
+C:\Users\opilane\source\repos\gluhhovtarpv22\Image_redactor\obj\Debug\net6.0-windows\ref\Image_redactor.dll
