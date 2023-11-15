@@ -34,7 +34,7 @@ namespace Image_redactor
         OpenFileDialog openfilDia;
         SaveFileDialog savfildiag;
         PictureBox pb;
-        ImageList il;
+        List<Image> il;
         TrackBar trackb;
         ComboBox cbx;
         ToolStripMenuItem windowMenuAbout, windowMenuFile, windowMenuEdit, windowMenuHelp, windowMenuNEW, windowMenuOpen, windowMenuSave, windowMenuExit, windowMenuUndo, windowMenuReno, windowMenuPen, windowMenuStyle, windowMenuSolid,
@@ -44,6 +44,8 @@ namespace Image_redactor
         Point oldLocation;
         Pen currentPen;
         Label label_XY;
+        Color historycolor;
+        int HistoryCounter;
         public bool MultiSelect { get; set; }
         public Form1()
         {
@@ -51,19 +53,24 @@ namespace Image_redactor
             InitializeComponent();
             drawing= false;
             currentPen = new Pen(Color.Black);
+            trackb = new TrackBar();
+            currentPen.Width = trackb.Value;
             this.Height = 600;
             this.Width = 800;
             this.Text = "Paiint";
             menu = new MenuStrip();
+            trackb.Dock= DockStyle.Bottom;
+            trackb.Maximum = 20;
+            trackb.Minimum = 1;
+            trackb.Value= 5;
+            //trackb.Scroll += new System.EventHandler(this.trackbarscroll);
 
-            trackb= new TrackBar();
-            
+            il = new List<Image>();
 
 
 
-            drawing = false;
-            currentPen = new Pen(Color.Black);
-            
+
+
 
 
 
@@ -81,6 +88,7 @@ namespace Image_redactor
             windowMenuNEW.ShortcutKeys = Keys.Control | Keys.N;
             // Make the menu item visible.
             windowMenuNEW.Visible = true;
+            windowMenuNEW.Click += newToolStripMenuItem_click;
             // Display the shortcut key combination.
             windowMenuNEW.ShowShortcutKeys = true;
             windowMenuOpen = new ToolStripMenuItem("Ava");
@@ -118,6 +126,7 @@ namespace Image_redactor
             windowMenuUndo.ShortcutKeys = Keys.Control | Keys.Z;
             // Make the menu item visible.
             windowMenuUndo.Visible = true;
+            windowMenuUndo.Click += undo_click;
             // Display the shortcut key combination.
             windowMenuUndo.ShowShortcutKeys = true;
             windowMenuReno = new ToolStripMenuItem("Reno");
@@ -128,6 +137,7 @@ namespace Image_redactor
             windowMenuReno.Visible = true;
             // Display the shortcut key combination.
             windowMenuReno.ShowShortcutKeys = true;
+            windowMenuReno.Click += reno_click;
             windowMenuPen = new ToolStripMenuItem("Pliiats");
             windowMenuPen.Checked = true;
              windowMenuStyle = new ToolStripMenuItem("Stiil");
@@ -189,10 +199,24 @@ namespace Image_redactor
             pb.Location = new Point(menu.Width);
             pb.Size= new Size(500,700);
             pb.Visible = true;
-            pb.BackColor = Color.Gray;
+            pb.BackColor = Color.White;
+            pb.BorderStyle= BorderStyle.None;
+            pb.MouseDown +=picDrawingSurface_mouseDown;
+            pb.MouseUp += picDrawingSurface_MouseUp;
+            pb.MouseMove += pb_MouseMove;
+            p = new Panel();
+            p.Location = new Point(pb.Bottom);
+            p.Name = "panel1";
+            p.Size = new Size(500, 700);
+            p.BorderStyle = BorderStyle.None;
+            p.BackColor = Color.Red;
+            p.TabIndex= 0;
+            label_XY = new Label();
+            label_XY.Location= new Point(p.Width, p.Height);
+            label_XY.Size = new Size(500, 30);
+            label_XY.TabIndex = 1;
 
-            
-            
+
 
 
             menu.Items.Add(windowMenuEdit);
@@ -215,13 +239,15 @@ namespace Image_redactor
             menu.Visible = true;
             this.Controls.Add(menu);
             this.Controls.Add(pb);
+            this.Controls.Add(p);
+            this.Controls.Add(trackb);
+            this.Controls.Add(label_XY);
             
 
-
-
-
         }
+
         
+
         private bool ShowShortcutKeys { get; set; }
         private void SetupMyMenuItem(object sender, EventArgs e)
         {
@@ -261,6 +287,16 @@ namespace Image_redactor
                 }
                 fs.Close();
             }
+            if (pb.Image !=null) 
+            {
+                var result = MessageBox.Show("salvestada seda pilti enne laadimisel uut pilti ", "kohtung", MessageBoxButtons.YesNoCancel);
+                switch (result)
+                {
+                    case DialogResult.No:break;
+                    case DialogResult.Yes: btn_save(sender, e); break;
+                    case DialogResult.Cancel:return;
+                }
+            }
         }
         private void btn_open(object sender, EventArgs e)
         {
@@ -270,7 +306,7 @@ namespace Image_redactor
             openfilDia.FilterIndex= 1;
             if (openfilDia.ShowDialog() != DialogResult.Cancel)
                 pb.Load(openfilDia.FileName);
-            pb.SizeMode= PictureBoxSizeMode.StretchImage;
+            pb.AutoSize = true;
 
         }
         private void picDrawingSurface_mouseDown(object sender, MouseEventArgs e)
@@ -297,6 +333,10 @@ namespace Image_redactor
         }
         private void picDrawingSurface_MouseUp(object sender, MouseEventArgs e)
         {
+            il.RemoveRange(HistoryCounter +1, il.Count - HistoryCounter -1);
+            il.Add(new Bitmap(pb.Image));
+            if (HistoryCounter + 1 < 10) il.RemoveAt(0);
+            if (il.Count - 1 == 10) il.RemoveAt(0);
             drawing = false;
             try
             {
@@ -306,7 +346,8 @@ namespace Image_redactor
         }
         private void pb_MouseMove(object sender, MouseEventArgs e)
         {
-            if(drawing)
+            label_XY.Text = e.X.ToString() + ", " + e.Y.ToString();
+            if (drawing)
             {
                 Graphics g = Graphics.FromImage(pb.Image);
                 currentPath.AddLine(oldLocation, e.Location);
@@ -314,13 +355,60 @@ namespace Image_redactor
                 oldLocation = e.Location;
                 g.Dispose();
                 pb.Invalidate();
-                label_XY.Text = e.X.ToString() + ", " + e.Y.ToString();
+
                 
+
             }
         }
-        
-
-
+        private void trackbarscroll(object sender, ScrollEventArgs e)
+        {
+            currentPen.Width = trackb.Value;
+        }
+        private void newToolStripMenuItem_click(object sender, EventArgs e)
+        {
+            il.Clear();
+            HistoryCounter = 0;
+            Bitmap pic = new Bitmap(750, 500);
+            pb.Image = pic;
+            il.Add(new Bitmap(pb.Image));
+        }
+        private void undo_click(object sender, EventArgs e) 
+        {
+            if (il.Count != 0 && HistoryCounter != 0)
+            {
+                pb.Image = new Bitmap(il[--HistoryCounter]);
+            }
+            else MessageBox.Show("ajalugu on tuhi");
+        }
+        private void reno_click(object sender, EventArgs e)
+        {
+            if (HistoryCounter < il.Count - 1)
+            {
+                pb.Image = new Bitmap(il[++HistoryCounter]);
+            }
+            else MessageBox.Show("ajalugu on tuhi");
+        }
+        private void solid_click(object sender, EventArgs e)
+        {
+            currentPen.DashStyle= DashStyle.Solid;
+            windowMenuSolid.Checked= true;
+            windowMenuDot.Checked= false;
+            windowMenuDASHDOTDOT.Checked= false;
+        }
+        private void dot_click(object sender, EventArgs e)
+        {
+            currentPen.DashStyle = DashStyle.Dot;
+            windowMenuSolid.Checked = false;
+            windowMenuDot.Checked = true;
+            windowMenuDASHDOTDOT.Checked = false;
+        }
+        private void dasdot_click(object sender, EventArgs e)
+        {
+            currentPen.DashStyle = DashStyle.DashDotDot;
+            windowMenuSolid.Checked = false;
+            windowMenuDot.Checked = false;
+            windowMenuDASHDOTDOT.Checked = true;
+        }
 
     }
     
