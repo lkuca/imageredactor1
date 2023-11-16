@@ -54,16 +54,20 @@ namespace Image_redactor
             drawing= false;
             currentPen = new Pen(Color.Black);
             trackb = new TrackBar();
+            trackb.Dock = DockStyle.Bottom; ;
+            trackb.Size = new Size(200, 300);
+            trackb.Maximum = 20;
+            trackb.Minimum = 1;
+            trackb.Value = 5;
+            trackb.Scroll += Trackb_Scroll;
             currentPen.Width = trackb.Value;
+
             this.Height = 600;
             this.Width = 800;
             this.Text = "Paiint";
             menu = new MenuStrip();
-            trackb.Dock= DockStyle.Bottom;
-            trackb.Maximum = 20;
-            trackb.Minimum = 1;
-            trackb.Value= 5;
-            //trackb.Scroll += new System.EventHandler(this.trackbarscroll);
+            
+            //trackb.Scroll += trackbarscroll;
 
             il = new List<Image>();
 
@@ -200,12 +204,13 @@ namespace Image_redactor
             pb.Size= new Size(500,700);
             pb.Visible = true;
             pb.BackColor = Color.White;
-            pb.BorderStyle= BorderStyle.None;
+            pb.BorderStyle= BorderStyle.Fixed3D;
             pb.MouseDown +=picDrawingSurface_mouseDown;
             pb.MouseUp += picDrawingSurface_MouseUp;
             pb.MouseMove += pb_MouseMove;
+            pb.MouseDown += kustukumm;
             p = new Panel();
-            p.Location = new Point(pb.Bottom);
+            p.Location = new Point(pb.Location.X,pb.Location.Y+ 5);
             p.Name = "panel1";
             p.Size = new Size(500, 700);
             p.BorderStyle = BorderStyle.None;
@@ -246,7 +251,12 @@ namespace Image_redactor
 
         }
 
-        
+        private void Trackb_Scroll(object? sender, EventArgs e)
+        {
+            currentPen.Width = trackb.Value;
+            
+
+        }
 
         private bool ShowShortcutKeys { get; set; }
         private void SetupMyMenuItem(object sender, EventArgs e)
@@ -331,11 +341,27 @@ namespace Image_redactor
             //}
             //catch { };
         }
-        private void picDrawingSurface_MouseUp(object sender, MouseEventArgs e)
+        private void kustukumm(object sender, MouseEventArgs e)
         {
-            il.RemoveRange(HistoryCounter +1, il.Count - HistoryCounter -1);
-            il.Add(new Bitmap(pb.Image));
-            if (HistoryCounter + 1 < 10) il.RemoveAt(0);
+
+            if (pb.Image == null)
+            {
+                MessageBox.Show("alguses laadige uus fail!");
+                return;
+            }
+            if (e.Button == MouseButtons.Right)
+            {
+                currentPen = new Pen(Color.White);
+                drawing = true;
+                oldLocation = e.Location;
+                currentPath = new GraphicsPath();
+            }
+        }
+            private void picDrawingSurface_MouseUp(object sender, MouseEventArgs e)
+        {
+            //il.RemoveRange(HistoryCounter +1, il.Count - HistoryCounter -1);
+            //il.Add(new Bitmap(pb.Image));
+            //if (HistoryCounter + 1 < 10) il.RemoveAt(0);
             if (il.Count - 1 == 10) il.RemoveAt(0);
             drawing = false;
             try
@@ -366,6 +392,7 @@ namespace Image_redactor
         }
         private void newToolStripMenuItem_click(object sender, EventArgs e)
         {
+            
             il.Clear();
             HistoryCounter = 0;
             Bitmap pic = new Bitmap(750, 500);
