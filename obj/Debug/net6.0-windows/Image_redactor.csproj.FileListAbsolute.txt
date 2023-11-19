@@ -43,3 +43,6 @@ C:\Users\opilane\Source\Repos\imageredactor1\obj\Debug\net6.0-windows\refint\Ima
 C:\Users\opilane\Source\Repos\imageredactor1\obj\Debug\net6.0-windows\Image_redactor.pdb
 C:\Users\opilane\Source\Repos\imageredactor1\obj\Debug\net6.0-windows\Image_redactor.genruntimeconfig.cache
 C:\Users\opilane\Source\Repos\imageredactor1\obj\Debug\net6.0-windows\ref\Image_redactor.dll
+C:\Users\Sergei\Source\Repos\imageredactor1\obj\Debug\net6.0-windows\Image_redactor.Form1.resources
+C:\Users\Sergei\Source\Repos\imageredactor1\obj\Debug\net6.0-windows\Image_redactor.Form2.resources
+C:\Users\Sergei\Source\Repos\imageredactor1\obj\Debug\net6.0-windows\Image_redactor.csproj.GenerateResource.cache

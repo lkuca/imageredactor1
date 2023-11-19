@@ -2,6 +2,7 @@ using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -47,11 +48,18 @@ namespace Image_redactor
         Color historycolor;
         int HistoryCounter;
         public bool MultiSelect { get; set; }
+        
         public Form1()
         {
-
+            
             InitializeComponent();
-            drawing= false;
+
+            Form2 f = new Form2(Color.Black);
+            f.Owner = this;
+            f.ShowDialog();
+
+
+            drawing = false;
             currentPen = new Pen(Color.Black);
             trackb = new TrackBar();
             trackb.Dock = DockStyle.Bottom; ;
@@ -257,6 +265,7 @@ namespace Image_redactor
             
 
         }
+
 
         private bool ShowShortcutKeys { get; set; }
         private void SetupMyMenuItem(object sender, EventArgs e)
