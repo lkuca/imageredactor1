@@ -12,13 +12,14 @@ namespace Image_redactor
 {
     public partial class ToolStrip : Form
     {
-        System.Windows.Forms.Button btn,btn1, btn2, btn3, btn4;
+         System.Windows.Forms.Button btn,btn1, btn2, btn3, btn4;
         public ToolStrip()
         {
-            btn = new System.Windows.Forms.Button();
+            btn = new  System.Windows.Forms.Button();
             btn.Height = 40;
             btn.Width = 100;
             btn.Location = new Point(150, 50);
+            btn.MouseClick += btnOpenNewForm_Click;
             //btn.Click += Btn_Click;
             //btn.MouseHover += button2_MouseHover;
             btn1.Visible = true;
@@ -101,7 +102,7 @@ namespace Image_redactor
         //{
         //    try
         //    {
-                
+
         //    }
         //    catch(Exception ex)
         //    {
@@ -113,7 +114,14 @@ namespace Image_redactor
         //    }
         //}
 
+        private void btnOpenNewForm_Click(object sender, EventArgs e)
+        {
+            // Create an instance of the new form
+            Form2 f = new Form2(Color.Black);
 
-        
+            // Show the new form
+            f.ShowDialog();
+        }
+
     }
 }

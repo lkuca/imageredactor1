@@ -19,9 +19,11 @@ namespace Image_redactor
         NumericUpDown numicRed,numicGreen,numicBlue;
         HScrollBar Red,Greem,Blue;
         Color colorResult;
-        TextBox textBox1, textBox2, textBox3;
-
+        TextBox textBox1 ;
         
+        public Color SelectedColor { get; private set; }
+
+
         public Form2(Color color) 
         {
 
@@ -32,7 +34,17 @@ namespace Image_redactor
             this.Width = 800;
             this.Text = "Colors";
 
+           
+
+            pbs = new PictureBox();
+            pbs.BackColor = colorResult;
+            pbs.BorderStyle = BorderStyle.FixedSingle;
+            pbs.Size = new Size(400, 200);
+            pbs.Location = new Point(0,0);
+            pbs.Visible = true;
             textBox1 = new TextBox();
+           
+
 
             Form1 main = this.Owner as Form1;
             if (main != null)
@@ -40,7 +52,7 @@ namespace Image_redactor
                 string s = main.Text;
                 main.Text = "OK";
             }
-
+            
             Red = new HScrollBar();
             Greem= new HScrollBar();
             Blue = new HScrollBar();
@@ -73,18 +85,39 @@ namespace Image_redactor
 
 
 
+
+
+
+
             Red.Location = new Point(40, 50);
-            Red.Visible = true;
+            Red.Visible = false;
             Greem.Location = new Point(Red.Location.X, Red.Location.Y + 20);
-            Greem.Visible = true;
+            Greem.Visible = false;
             Blue.Location = new Point(Greem.Location.X, Greem.Location.Y + 20);
-            Blue.Visible = true;
+            Blue.Visible = false;
             numicRed.Location = new Point(Red.Right + 50, Red.Location.Y);
             numicGreen.Location = new Point(Greem.Right + 50, Greem.Location.Y);
             numicBlue.Location = new Point(Blue.Right + 50, Blue.Location.Y);
             numicBlue.Visible = true;
             numicRed.Visible = true;
             numicGreen.Visible = true;
+            Button btnForm2 = new Button();
+            btnForm2.Text = "salevsta";
+            btnForm2.Location = new Point(20, 250);
+            btnForm2.Click += chetotam;
+            Button btnForm3 = new Button();
+            btnForm3.Text = "apply";
+            btnForm3.Location = new Point(20, 300);
+            btnForm3.Click += vazaaaap;
+
+            this.Controls.Add(btnForm2);
+            //baton = new Button();
+            //baton.Height = 40;
+            //baton.Width = 100;
+            //baton.Text = "Valjuta mind!";
+            //baton.Location = new Point(pbs.Location.X, pbs.Location.Y + 50);
+            //baton.Click += chetotam;
+            //baton.Visible = true;
 
             this.Controls.Add(Red);
             this.Controls.Add(Greem);
@@ -92,6 +125,10 @@ namespace Image_redactor
             this.Controls.Add(numicRed);
             this.Controls.Add(numicGreen);
             this.Controls.Add(numicBlue);
+            this.Controls.Add(pbs);
+            this.Controls.Add(btnForm3);
+            this.Controls.Add(textBox1);
+            //this.Controls.Add(baton);
 
 
 
@@ -107,8 +144,33 @@ namespace Image_redactor
             numicRed.Value = color.R;
             numicGreen.Value = color.G;
             numicBlue.Value = color.B;
+
             
+            numicRed.Scroll += redvluechange;
             
+            numicGreen.Scroll += greemvluechange;
+            
+            numicBlue.Scroll += bluevluechange;
+
+            numicRed.ValueChanged += Numic_ValueChanged;
+
+            numicGreen.ValueChanged += Numic_ValueChanged;
+
+            numicBlue.ValueChanged += Numic_ValueChanged;
+
+            //Red.Controls.Cast(UpdateColor);
+            //Greem.ControlAdded+=UpdateColor;
+            //Blue.ControlAdded+= UpdateColor;
+
+            //var cto = MessageBox.Show("salvestada seda pilti enne laadimisel uut pilti ", "kohtung", MessageBoxButtons.YesNoCancel);
+            //switch (cto)
+            //{
+            //    case DialogResult.No: break;
+            //    case DialogResult.Yes: btn_save(sender, e); break;
+            //    case DialogResult.Cancel: return;
+            //}
+            
+
         }
 
         private void Redvaluechange(object sender, EventArgs e)
@@ -129,7 +191,7 @@ namespace Image_redactor
             NumericUpDown numericUpDown1 = (NumericUpDown)sender;
             numericUpDown1.Value = scrollBar.Value;
         }
-        private void Greemvluechange(object sender, EventArgs e)
+        private void greemvluechange(object sender, EventArgs e)
         {
             NumericUpDown numericUpDown1 = (NumericUpDown)sender;
             ScrollBar scrollBar = (ScrollBar)numericUpDown1.Tag;
@@ -141,7 +203,7 @@ namespace Image_redactor
             NumericUpDown numericUpDown1 = (NumericUpDown)sender;
             numericUpDown1.Value = scrollBar.Value;
         }
-        private void Bluevluechange(object sender, EventArgs e)
+        private void bluevluechange(object sender, EventArgs e)
         {
             NumericUpDown numericUpDown1 = (NumericUpDown)sender;
             ScrollBar scrollBar = (ScrollBar)numericUpDown1.Tag;
@@ -149,30 +211,39 @@ namespace Image_redactor
         }
         private void UpdateColor()
         {
-            colorResult = Color.FromArgb(Red.Value, Greem.Value, Blue.Value);
+            colorResult = Color.FromArgb((int)numicRed.Value, (int)numicGreen.Value, (int)numicBlue.Value);
             pbs.BackColor = colorResult;
+        }
+        private void Numic_ValueChanged(object sender, EventArgs e)
+        {
+            
+            UpdateColor();
+        }
+        private void chetotam(object sender, EventArgs e)
+        {
+            var cto = MessageBox.Show("otsustage kas soovite salvestada varvi ", "kohtung", MessageBoxButtons.YesNoCancel);
+            switch (cto)
+            {
+                case DialogResult.No: break;
+                case DialogResult.Yes: button_Click(sender, e); break;
+                case DialogResult.Cancel: return;
+            }
         }
         private void button_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                Red.Value = colorDialog.Color.R;
-                Greem.Value = colorDialog.Color.G;
-                Blue.Value = colorDialog.Color.B;
+                Color.FromArgb(Convert.ToInt32(numicRed.Value = colorDialog.Color.R));
+                Color.FromArgb(Convert.ToInt32(numicGreen.Value = colorDialog.Color.G));
+                Color.FromArgb(Convert.ToInt32(numicBlue.Value = colorDialog.Color.B));
 
                 colorResult = colorDialog.Color;
 
                 UpdateColor();
             }
         }
-        public string Data
-        {
-            get
-            {
-                return textBox1.Text;
-            }
-        }
+        
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
@@ -186,6 +257,12 @@ namespace Image_redactor
                 components.Dispose();
             }
             base.Dispose(disposing);
+        }
+        private void vazaaaap(object sender, EventArgs e)
+        {
+            // Set the SelectedColor property before closing the form
+            SelectedColor = Color.FromArgb((int)numicRed.Value, (int)numicGreen.Value, (int)numicBlue.Value);
+            this.Close();
         }
 
         #region Windows Form Designer generated code

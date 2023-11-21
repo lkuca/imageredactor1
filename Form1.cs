@@ -43,10 +43,13 @@ namespace Image_redactor
         bool drawing;
         GraphicsPath currentPath;
         Point oldLocation;
+        private Point mouseOffset;
+        private Point resize;
         Pen currentPen;
         Label label_XY;
         Color historycolor;
         int HistoryCounter;
+        Button btn, btn1, btn2, btn3, btn4;
         public bool MultiSelect { get; set; }
         
         public Form1()
@@ -54,9 +57,7 @@ namespace Image_redactor
             
             InitializeComponent();
 
-            Form2 f = new Form2(Color.Black);
-            f.Owner = this;
-            f.ShowDialog();
+            
 
 
             drawing = false;
@@ -79,6 +80,19 @@ namespace Image_redactor
 
             il = new List<Image>();
 
+            btn = new Button();
+            btn.Height = 40;
+            btn.Width = 100;
+            btn.Visible= false;
+            btn.Location = new Point(100, 100);
+            btn.MouseClick += btnOpenNewForm_Click;
+            btn1 = new Button();
+            btn1.Height = 40;
+            btn1.Width = 100;
+            btn1.Text= "varvid";
+            btn1.Visible = true;
+            btn1.Location = new Point(100, 120);
+            btn1.MouseClick += button_Clopck;
 
 
 
@@ -88,9 +102,7 @@ namespace Image_redactor
 
 
 
-
-
-             windowMenuFile = new ToolStripMenuItem("File");
+            windowMenuFile = new ToolStripMenuItem("File");
              windowMenuEdit = new ToolStripMenuItem("Muuta");
              windowMenuHelp = new ToolStripMenuItem("Abi");
             
@@ -158,7 +170,7 @@ namespace Image_redactor
             windowMenuSolid.Checked = true;
              windowMenuDot = new ToolStripMenuItem("Dot");
              windowMenuDASHDOTDOT = new ToolStripMenuItem("DashDOTDOT");
-
+            windowMenuExit.Click += sulebilaik;
 
 
             //SaveFileDialog savfildiag = new SaveFileDialog();
@@ -217,13 +229,23 @@ namespace Image_redactor
             pb.MouseUp += picDrawingSurface_MouseUp;
             pb.MouseMove += pb_MouseMove;
             pb.MouseDown += kustukumm;
+            pb.MouseDown += pictureBox1_MouseDown;
+            pb.MouseMove += pictureBox1_MouseMove;
+            pb.MouseUp += pictureBox1_MouseUp;
             p = new Panel();
             p.Location = new Point(pb.Location.X,pb.Location.Y+ 5);
             p.Name = "panel1";
-            p.Size = new Size(500, 700);
-            p.BorderStyle = BorderStyle.None;
-            p.BackColor = Color.Red;
+            p.Size = new Size(800, 800);
+            p.BorderStyle = BorderStyle.Fixed3D;
+            p.BackColor = Color.Gray;
             p.TabIndex= 0;
+            p.MouseDown += panel_dvigat;
+            p.MouseUp += panel_dvigat2;
+            p.MouseMove += panel_dvigat1;
+
+
+
+
             label_XY = new Label();
             label_XY.Location= new Point(p.Width, p.Height);
             label_XY.Size = new Size(500, 30);
@@ -251,12 +273,33 @@ namespace Image_redactor
 
             menu.Visible = true;
             this.Controls.Add(menu);
-            this.Controls.Add(pb);
+            p.Controls.Add(pb);
             this.Controls.Add(p);
             this.Controls.Add(trackb);
             this.Controls.Add(label_XY);
-            
+            this.Controls.Add(btn);
+            this.Controls.Add(btn1);
 
+            
+        }
+
+        
+
+        private void button_Clopck(object sender, EventArgs e)
+        {
+            
+                // Create an instance of Form2 and pass the selected color
+                Form2 f = new Form2(Color.Black);
+                f.Owner = this;
+                f.ShowDialog();
+
+                // Access the SelectedColor property after Form2 is closed
+                Color selectedColorFromForm2 = f.SelectedColor;
+
+                // Use the selected color in Form1 as needed (e.g., set the pen color)
+                currentPen = new Pen(selectedColorFromForm2);
+                // Do other actions with the color...
+            
         }
 
         private void Trackb_Scroll(object? sender, EventArgs e)
@@ -305,17 +348,9 @@ namespace Image_redactor
                         this.pb.Image.Save(fs, ImageFormat.Png); break;
                 }
                 fs.Close();
+                pb.Visible= true;
             }
-            if (pb.Image !=null) 
-            {
-                var result = MessageBox.Show("salvestada seda pilti enne laadimisel uut pilti ", "kohtung", MessageBoxButtons.YesNoCancel);
-                switch (result)
-                {
-                    case DialogResult.No:break;
-                    case DialogResult.Yes: btn_save(sender, e); break;
-                    case DialogResult.Cancel:return;
-                }
-            }
+            
         }
         private void btn_open(object sender, EventArgs e)
         {
@@ -326,6 +361,7 @@ namespace Image_redactor
             if (openfilDia.ShowDialog() != DialogResult.Cancel)
                 pb.Load(openfilDia.FileName);
             pb.AutoSize = true;
+            pb.Visible= true;
 
         }
         private void picDrawingSurface_mouseDown(object sender, MouseEventArgs e)
@@ -395,18 +431,40 @@ namespace Image_redactor
 
             }
         }
+        private void sulebilaik(object sender, EventArgs e)
+        {
+            if (pb.Image != null)
+            {
+                il.Clear();
+                HistoryCounter = 0;
+                Bitmap pic = new Bitmap(750, 500);
+                pb.Image = pic;
+                pb.Visible= false;
+            }
+        }
         private void trackbarscroll(object sender, ScrollEventArgs e)
         {
             currentPen.Width = trackb.Value;
         }
         private void newToolStripMenuItem_click(object sender, EventArgs e)
         {
-            
+            if (pb.Image != null)
+            {
+                var result = MessageBox.Show("salvestada seda pilti enne laadimisel uut pilti ", "kohtung", MessageBoxButtons.YesNoCancel);
+                switch (result)
+                {
+                    case DialogResult.No: break;
+                    case DialogResult.Yes: btn_save(sender, e); break;
+                    case DialogResult.Cancel: return;
+                }
+            }
             il.Clear();
             HistoryCounter = 0;
             Bitmap pic = new Bitmap(750, 500);
             pb.Image = pic;
             il.Add(new Bitmap(pb.Image));
+            pb.Visible= true;
+
         }
         private void undo_click(object sender, EventArgs e) 
         {
@@ -444,6 +502,71 @@ namespace Image_redactor
             windowMenuSolid.Checked = false;
             windowMenuDot.Checked = false;
             windowMenuDASHDOTDOT.Checked = true;
+        }
+        private void btnOpenNewForm_Click(object sender, EventArgs e)
+        {
+            // Create an instance of the new form
+            Form2 f = new Form2(Color.Black);
+
+            // Show the new form
+            f.ShowDialog();
+        }
+        private void panel_dvigat2(object? sender, MouseEventArgs e)
+        {
+            
+        }
+
+        private void panel_dvigat1(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                Point newLocation = p.PointToClient(MousePosition);
+                newLocation.Offset(mouseOffset.X, mouseOffset.Y);
+                pb.Location = newLocation;
+            }
+        }
+
+
+        private void panel_dvigat(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                mouseOffset = new Point(-e.X, -e.Y);
+            }
+        }
+        private void pictureBox1_MouseUp(object? sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_MouseMove(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Middle)
+            {
+                int deltaX = e.X - resize.X;
+                int deltaY = e.Y - resize.Y;
+
+                int newWidth = pb.Width + deltaX;
+                int newHeight = pb.Height + deltaY;
+
+                if (newWidth > 0 && newHeight > 0)
+                {
+                    pb.Size = new Size(newWidth, newHeight);
+                }
+            }
+        }
+
+        private void pictureBox1_MouseDown(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Middle)
+            {
+                resize = new Point( e.X);
+                resize = new Point(e.Y);
+            }
+            
+            
+               
+            
         }
 
     }
